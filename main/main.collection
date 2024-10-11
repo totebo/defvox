@@ -39,15 +39,10 @@ instances {
     }
   }
 }
-instances {
-  id: "voxel"
-  prototype: "/main/voxel.go"
-}
 scale_along_z: 0
 embedded_instances {
   id: "go"
   children: "rendy"
-  children: "voxel"
   data: "components {\n"
   "  id: \"main\"\n"
   "  component: \"/main/main.script\"\n"
