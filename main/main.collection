@@ -1,0 +1,62 @@
+name: "main"
+instances {
+  id: "rendy"
+  prototype: "/rendy/rendy.go"
+  position {
+    y: -18.0
+    z: 1.0
+  }
+  rotation {
+    x: 0.70710677
+    w: 0.70710677
+  }
+  component_properties {
+    id: "script"
+    properties {
+      id: "orthographic"
+      value: "false"
+      type: PROPERTY_TYPE_BOOLEAN
+    }
+    properties {
+      id: "resize_mode_center"
+      value: "false"
+      type: PROPERTY_TYPE_BOOLEAN
+    }
+    properties {
+      id: "resize_mode_expand"
+      value: "true"
+      type: PROPERTY_TYPE_BOOLEAN
+    }
+    properties {
+      id: "z_min"
+      value: "1.0"
+      type: PROPERTY_TYPE_NUMBER
+    }
+    properties {
+      id: "z_max"
+      value: "-1.0"
+      type: PROPERTY_TYPE_NUMBER
+    }
+  }
+}
+instances {
+  id: "voxel"
+  prototype: "/main/voxel.go"
+}
+scale_along_z: 0
+embedded_instances {
+  id: "go"
+  children: "rendy"
+  children: "voxel"
+  data: "components {\n"
+  "  id: \"main\"\n"
+  "  component: \"/main/main.script\"\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"voxel_factory\"\n"
+  "  type: \"factory\"\n"
+  "  data: \"prototype: \\\"/main/voxel.go\\\"\\n"
+  "\"\n"
+  "}\n"
+  ""
+}
