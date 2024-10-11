@@ -53,5 +53,11 @@ embedded_instances {
   "  data: \"prototype: \\\"/main/voxel.go\\\"\\n"
   "\"\n"
   "}\n"
+  "embedded_components {\n"
+  "  id: \"empty_factory\"\n"
+  "  type: \"factory\"\n"
+  "  data: \"prototype: \\\"/main/empty.go\\\"\\n"
+  "\"\n"
+  "}\n"
   ""
 }

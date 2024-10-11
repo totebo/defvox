@@ -6,15 +6,16 @@ function init(self)
 
 	local magicavoxel_data = magicavoxel.load("/custom_resources/test.vox")
 	for model_index, model in ipairs(magicavoxel_data.models) do
+
 		-- model.size
-		pprint(model.size)
-		
+
 		for _, voxel in ipairs(model.voxels) do
 			local game_object = factory.create("/go#voxel_factory", voxel.world_position)
 			local cube_model = msg.url(nil, game_object, "model") 
 			local color = magicavoxel.get_color(voxel.color_index)
 			go.set(cube_model, "tint", color)
 		end
+
 	end
 
 	--pprint(test.get_model_count("/custom_resources/test.vox"))
