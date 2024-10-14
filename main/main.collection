@@ -42,7 +42,6 @@ instances {
 scale_along_z: 0
 embedded_instances {
   id: "go"
-  children: "rendy"
   data: "components {\n"
   "  id: \"main\"\n"
   "  component: \"/main/main.script\"\n"
@@ -60,4 +59,14 @@ embedded_instances {
   "\"\n"
   "}\n"
   ""
+}
+embedded_instances {
+  id: "camera"
+  children: "pivot"
+  data: ""
+}
+embedded_instances {
+  id: "pivot"
+  children: "rendy"
+  data: ""
 }
