@@ -1,25 +1,21 @@
 
-local magicavoxel = require "magicavoxel"
-local test = require "test"
+
 local rendy = require "rendy.rendy"
+local camera = require "main.camera"
+local level = require "main.level"
 
 function init(self)
 
-	local magicavoxel_data = magicavoxel.load("/custom_resources/test.vox")
-	for model_index, model in ipairs(magicavoxel_data.models) do
 
-		print(model_index)
-		-- model.size
+	level.load()
 
-		for _, voxel in ipairs(model.voxels) do
-			local game_object = factory.create("/go#voxel_factory", voxel.world_position)
-			local cube_model = msg.url(nil, game_object, "model") 
-			local color = magicavoxel.get_color(voxel.color_index)
-			go.set(cube_model, "tint", color)
-		end
 
+	if sys.get_engine_info().is_debug then
+		sys.set_error_handler(function()
+			print("ERROR ^^^")
+			sys.exit(1)
+		end)
 	end
-
 
 	msg.post("#", "acquire_input_focus")
 
@@ -32,9 +28,9 @@ function final(self)
 end
 
 function update(self, dt)
-	-- Add update code here
-	-- Learn more: https://defold.com/manuals/script/
-	-- Remove this function if not needed
+
+	level.update(self, dt)
+
 end
 
 function fixed_update(self, dt)
@@ -52,116 +48,14 @@ function on_message(self, message_id, message, sender)
 	-- Remove this function if not needed
 end
 
--- Declare variables to store state
-local pressed_time
-local pressed_position
-local pressed_camera_euler_z
-local pressed_camera_euler_x
-local last_positions = {}
-local history_duration = 0.25 -- Time window in seconds for calculating drag speed
+
 
 function on_input(self, action_id, action)
 
-	if action_id == hash("touch") then
+	local is_digging = level.on_input(self, action_id, action)
+	camera.set_camera_locked(is_digging)
+	camera.on_input(self, action_id, action)
 
-		if action.pressed then
-
-			-- Store the time and position when touch is pressed
-			pressed_time = socket.gettime()
-			pressed_position = vmath.vector3(action.screen_x, action.screen_y, 0)
-			-- Store initial camera Euler angles
-			pressed_camera_euler_z = go.get("/rotation", "euler.z")
-			pressed_camera_euler_x = go.get("/tilt", "euler.x")
-
-			-- Clear position history
-			last_positions = {}
-			table.insert(last_positions, {position = pressed_position, time = pressed_time})
-
-			go.cancel_animations("/rotation", "euler.z")
-			go.cancel_animations("/tilt", "euler.x")
-			
-		elseif action.released then
-
-			-- Get the current time and position on release
-			local released_time = socket.gettime()
-			local release_position = vmath.vector3(action.screen_x, action.screen_y, 0)
-
-			-- Remove history entries older than the defined history_duration (0.25 seconds)
-			while #last_positions > 0 and (released_time - last_positions[1].time) > history_duration do
-				table.remove(last_positions, 1)
-			end
-
-			-- Calculate drag speed based on the most recent position in the last 0.25 seconds
-			if #last_positions > 0 then
-				local last_position_data = last_positions[1]
-				local drag_vector = last_position_data.position - release_position
-				local drag_duration = released_time - last_position_data.time
-
-				-- Calculate drag speed (distance/time) for the last 0.25 seconds
-				local drag_speed_x = drag_vector.x / drag_duration * 0.01 -- Drag speed for rotation
-				local drag_speed_y = drag_vector.y / drag_duration * 0.01 -- Drag speed for tilt
-
-				-- Animate rotation (Z-axis)
-				local current_euler_z = go.get("/rotation", "euler.z")
-				local new_euler_z = current_euler_z + drag_speed_x
-				go.animate("/rotation", "euler.z", go.PLAYBACK_ONCE_FORWARD, new_euler_z, go.EASING_OUTEXPO, 0.5)
-
-				-- Animate tilt (X-axis)
-				local current_euler_x = go.get("/tilt", "euler.x")
-				local new_euler_x = current_euler_x - drag_speed_y
-				-- Clamp tilt to avoid flipping
-				new_euler_x = math.max(-90, math.min(90, new_euler_x))
-				go.animate("/tilt", "euler.x", go.PLAYBACK_ONCE_FORWARD, new_euler_x, go.EASING_OUTEXPO, 0.5)
-			end
-
-		else
-
-			-- Handle dragging to adjust rotation and tilt
-			local current_time = socket.gettime()
-			local position = vmath.vector3(action.screen_x, action.screen_y, 0)
-			local drag_vector = pressed_position - position
-
-			-- Update position history
-			table.insert(last_positions, {position = position, time = current_time})
-			-- Remove history entries older than the defined history_duration (0.25 seconds)
-			while #last_positions > 0 and (current_time - last_positions[1].time) > history_duration do
-				table.remove(last_positions, 1)
-			end
-
-			-- Update rotation (Z-axis)
-			local new_euler_z = pressed_camera_euler_z + (drag_vector.x * 0.1)
-			go.set("/rotation", "euler.z", new_euler_z)
-
-			-- Update tilt (X-axis)
-			local new_euler_x = pressed_camera_euler_x - (drag_vector.y * 0.1)
-			-- Clamp tilt to avoid flipping
-			new_euler_x = math.max(-90, math.min(90, new_euler_x))
-			go.set("/tilt", "euler.x", new_euler_x)
-
-		end
-
-	end
-
-	if action_id == hash("touch") then
-
-		if action.pressed then
-			local SWIPE_RAY_LENGTH = 10000
-			local rendy_id = go.get_id("/rendy")
-			local position_start = vmath.vector3(action.screen_x, action.screen_y, SWIPE_RAY_LENGTH/2)
-			local position_end = vmath.vector3(action.screen_x, action.screen_y, -SWIPE_RAY_LENGTH/2)
-			local ray_start = rendy.screen_to_world(rendy_id, position_start)
-			local ray_end = rendy.screen_to_world(rendy_id, position_end)
-
-			if ray_start then
-				msg.post("@render:", "draw_line", { start_point = ray_start, end_point = ray_end, color = vmath.vector4(1, 0.5, 0, 1) } )
-				local hit = physics.raycast(ray_start, ray_end, {hash("voxel")})
-				if hit then
-					print("boom")
-				end
-			end
-		end
-
-	end
 end
 
 
