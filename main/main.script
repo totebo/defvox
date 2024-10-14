@@ -1,6 +1,7 @@
 
 local magicavoxel = require "magicavoxel"
 local test = require "test"
+local rendy = require "rendy.rendy"
 
 function init(self)
 
@@ -141,6 +142,26 @@ function on_input(self, action_id, action)
 
 	end
 
+	if action_id == hash("touch") then
+
+		if action.pressed then
+			local SWIPE_RAY_LENGTH = 10000
+			local rendy_id = go.get_id("/rendy")
+			local position_start = vmath.vector3(action.screen_x, action.screen_y, SWIPE_RAY_LENGTH/2)
+			local position_end = vmath.vector3(action.screen_x, action.screen_y, -SWIPE_RAY_LENGTH/2)
+			local ray_start = rendy.screen_to_world(rendy_id, position_start)
+			local ray_end = rendy.screen_to_world(rendy_id, position_end)
+
+			if ray_start then
+				msg.post("@render:", "draw_line", { start_point = ray_start, end_point = ray_end, color = vmath.vector4(1, 0.5, 0, 1) } )
+				local hit = physics.raycast(ray_start, ray_end, {hash("voxel")})
+				if hit then
+					print("boom")
+				end
+			end
+		end
+
+	end
 end
 
 

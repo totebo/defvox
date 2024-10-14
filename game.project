@@ -25,3 +25,7 @@ clear_color_red = 0.290196
 clear_color_green = 0.756863
 clear_color_blue = 1.0
 
+[physics]
+type = 3D
+max_collision_object_count = 4096
+
