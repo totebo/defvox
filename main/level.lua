@@ -4,7 +4,7 @@ local rendy = require "rendy.rendy"
 local M = {}
 
 local SWIPE_RAY_LENGTH = 10000
-local TTL = 0.25
+local TTL = 0.05
 
 local dig_pressed_time
 local dig_pressed_position
@@ -18,12 +18,18 @@ local is_digging
 local function create_voxel(position, color)
 
 	local game_object = factory.create("/go#voxel_factory", position)
+
+	local model = msg.url(nil, game_object, "model")
+	local light = vmath.vector4(100, -150, 120, 100)
+	go.set(model, "light", light)
+
+	
 	local cube_model = msg.url(nil, game_object, "model") 
 	go.set(cube_model, "tint", color)
 	voxels[game_object] = {
 		ttl = TTL,
 	}
-	
+
 end
 
 local function delete_voxel(game_object)
@@ -36,8 +42,8 @@ local function delete_voxel(game_object)
 
 end
 
-function M.load()
-	local magicavoxel_data = magicavoxel.load("/custom_resources/test.vox")
+function M.load(url)
+	local magicavoxel_data = magicavoxel.load(url)
 	for model_index, model in ipairs(magicavoxel_data.models) do
 		for _, voxel in ipairs(model.voxels) do
 			local color = magicavoxel.get_color(voxel.color_index)

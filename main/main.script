@@ -7,7 +7,9 @@ local level = require "main.level"
 function init(self)
 
 
-	level.load()
+	--local url = "/custom_resources/test.vox"
+	local url = "/custom_resources/terrain.vox"
+	level.load(url)
 
 
 	if sys.get_engine_info().is_debug then
@@ -16,6 +18,7 @@ function init(self)
 			sys.exit(1)
 		end)
 	end
+
 
 	msg.post("#", "acquire_input_focus")
 

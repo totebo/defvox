@@ -29,3 +29,9 @@ clear_color_blue = 1.0
 type = 3D
 max_collision_object_count = 4096
 
+[collection]
+max_instances = 8192
+
+[graphics]
+max_draw_calls = 8192
+

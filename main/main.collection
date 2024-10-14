@@ -4,7 +4,6 @@ instances {
   prototype: "/rendy/rendy.go"
   position {
     y: -18.0
-    z: 1.0
   }
   rotation {
     x: 0.70710677
@@ -42,6 +41,7 @@ instances {
 scale_along_z: 0
 embedded_instances {
   id: "go"
+  children: "gold"
   data: "components {\n"
   "  id: \"main\"\n"
   "  component: \"/main/main.script\"\n"
@@ -74,4 +74,34 @@ embedded_instances {
   id: "tilt"
   children: "rendy"
   data: ""
+}
+embedded_instances {
+  id: "gold"
+  data: "embedded_components {\n"
+  "  id: \"model\"\n"
+  "  type: \"model\"\n"
+  "  data: \"mesh: \\\"/builtins/assets/meshes/cube.dae\\\"\\n"
+  "name: \\\"{{NAME}}\\\"\\n"
+  "materials {\\n"
+  "  name: \\\"default\\\"\\n"
+  "  material: \\\"/assets/materials/model.material\\\"\\n"
+  "  textures {\\n"
+  "    sampler: \\\"tex0\\\"\\n"
+  "    texture: \\\"/assets/download.jpg\\\"\\n"
+  "  }\\n"
+  "}\\n"
+  "\"\n"
+  "}\n"
+  ""
+  rotation {
+    x: 0.66211003
+    y: 0.52203816
+    z: 0.014711039
+    w: 0.53746635
+  }
+  scale3 {
+    x: 3.0
+    y: 3.0
+    z: 3.0
+  }
 }
