@@ -53,7 +53,8 @@ end
 
 local pressed_time
 local pressed_posiion
-local pressed_camera_pivot_rotation
+local pressed_camera_euler_z
+local pressed_camera_euler_x
 
 function on_input(self, action_id, action)
 
@@ -62,16 +63,27 @@ function on_input(self, action_id, action)
 		if action.pressed then
 			pressed_time = socket.gettime()
 			pressed_posiion = vmath.vector3(action.screen_x, action.screen_y, 0)
-			pressed_camera_pivot_rotation = go.get_rotation("/pivot")
+			pressed_camera_euler_z = go.get("/rotation", "euler.z")
+			pressed_camera_euler_x = go.get("/tilt", "euler.x")
 		else
+
 			local position = vmath.vector3(action.screen_x, action.screen_y, 0)
 			local drag_vector = pressed_posiion-position
-			local euler_z = drag_vector.x * 0.1 -- Rotate
-			local euler_x = drag_vector.y * -0.1 -- Tilt
-			local drag_rotation_z = vmath.quat_rotation_z(math.rad(euler_z))
-			local drag_rotation_x = vmath.quat_rotation_x(math.rad(euler_x))
-			local new_pivot_rotation = pressed_camera_pivot_rotation * drag_rotation_z * drag_rotation_x
-			go.set_rotation(new_pivot_rotation, "/pivot")
+
+			-- Rotation
+			local euler_z = pressed_camera_euler_z + (drag_vector.x * 0.1) -- Rotate
+			go.set("/rotation", "euler.z", euler_z)
+
+			-- Tilt
+			local euler_x = pressed_camera_euler_x - (drag_vector.y * 0.1) -- Rotate
+			if euler_x > 90 then
+				euler_x = 90
+			end
+			if euler_x < -90 then
+				euler_x = -90
+			end
+			go.set("/tilt", "euler.x", euler_x)
+
 		end
 		
 	end

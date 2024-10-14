@@ -62,11 +62,16 @@ embedded_instances {
 }
 embedded_instances {
   id: "camera"
-  children: "pivot"
+  children: "rotation"
   data: ""
 }
 embedded_instances {
-  id: "pivot"
+  id: "rotation"
+  children: "tilt"
+  data: ""
+}
+embedded_instances {
+  id: "tilt"
   children: "rendy"
   data: ""
 }
